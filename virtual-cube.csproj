@@ -28,8 +28,9 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <WebPage>publish.htm</WebPage>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -243,11 +244,4 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\CoreDX.vJoy.Wrapper.1.1.1\build\CoreDX.vJoy.Wrapper.targets" Condition="Exists('packages\CoreDX.vJoy.Wrapper.1.1.1\build\CoreDX.vJoy.Wrapper.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\CoreDX.vJoy.Wrapper.1.1.1\build\CoreDX.vJoy.Wrapper.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\CoreDX.vJoy.Wrapper.1.1.1\build\CoreDX.vJoy.Wrapper.targets'))" />
-  </Target>
 </Project>

@@ -33,6 +33,7 @@ namespace virtual_cube
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        private static readonly int DEFAULT_KEYPRESS_TIME = 20;
         private static readonly CubeBluetoothLEAdvertisementWatcher watcher = new CubeBluetoothLEAdvertisementWatcher();
         public static Boolean mappingEnabled = false;
         public List<VirtualKeyCode> VIRTUAL_KEY_CODES;
@@ -221,7 +222,7 @@ namespace virtual_cube
 
         async Task SendUpWithDelay(VirtualKeyCode a)
         {
-            int delay = Configuration.TimePerKeyPress ?? 500;
+            int delay = Configuration.TimePerKeyPress ?? DEFAULT_KEYPRESS_TIME;
             await Task.Delay(delay);
             InputSimulator.Keyboard.KeyUp(a);
         }
@@ -229,7 +230,7 @@ namespace virtual_cube
         async Task HighLight(Move move)
         {
             SetLabelStyle(move, Brushes.LightBlue, Brushes.White);
-            int delay = Configuration.TimePerKeyPress ?? 500;
+            int delay = Configuration.TimePerKeyPress ?? DEFAULT_KEYPRESS_TIME;
 
             await Task.Delay(delay);
             SetLabelStyle(move, null, Brushes.Black);
@@ -289,7 +290,7 @@ namespace virtual_cube
             bool success = Int32.TryParse(PRESSTIME.Text, out number);
             if (!success)
             {
-                number = 500;
+                number = DEFAULT_KEYPRESS_TIME;
             }
 
             return number;
