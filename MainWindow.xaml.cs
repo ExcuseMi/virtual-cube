@@ -58,6 +58,7 @@ namespace virtual_cube
             ToggleKeyMapping();
             Active = true;
             watcher.DeviceFoundEvent += DeviceFound;
+            cubeGrid.ItemsSource = Cubes;
             StartScan();
             VIRTUAL_KEY_CODES = ((VirtualKeyCode[])Enum.GetValues(typeof(VirtualKeyCode))).ToList();
 
@@ -94,10 +95,21 @@ namespace virtual_cube
             var periodTimeSpan = TimeSpan.FromMinutes(1);
             batteryTimer = new System.Threading.Timer((e) =>
             {
-                foreach(Cube cube in Cubes.Where(x => x.ConnectionStatus == ConnectionStatus.CONNECTED))
+                foreach (Cube cube in Cubes.Where(x => x.ConnectionStatus == ConnectionStatus.CONNECTED))
                 {
                     cube.RequestBatteryLevelAsync();
                 }
+                var CubesToRemove = Cubes.Where(x =>
+                x.ConnectionStatus == ConnectionStatus.DISCONNECTED
+                    && x.LastAdvertisement < DateTime.Now.AddMinutes(-2)).ToList();
+                Application.Current.Dispatcher.Invoke(new Action(() => {
+                    foreach (Cube cube in CubesToRemove)
+                    {
+                        Cubes.Remove(cube);
+                    }
+                }));
+
+
             }, null, startTimeSpan, periodTimeSpan);
         }
 
@@ -176,10 +188,14 @@ namespace virtual_cube
         private async void Connect(Cube cube)
         {
             await cube.ConnectAsync();
-            cube.Moves += OnMove;
-            StopScan();
+            if (cube.ConnectionStatus == ConnectionStatus.CONNECTED)
+            {
+                cube.Moves += OnMove;
+                StopScan();
+                await cube.RequestBatteryLevelAsync();
 
-            await cube.RequestBatteryLevelAsync();
+            }
+
         }
 
 
@@ -189,7 +205,6 @@ namespace virtual_cube
             cube.Moves -= OnMove;
             Application.Current.Dispatcher.Invoke(new Action(() => {
                     Cubes.Remove(cube);
-                    cubeGrid.ItemsSource = Cubes;
             }));
             StartScan();
         }
@@ -263,7 +278,11 @@ namespace virtual_cube
                 if (!Cubes.Contains(cube))
                 {
                     Cubes.Add(cube);
-                    cubeGrid.ItemsSource = Cubes;
+                    cube.LastAdvertisement = DateTime.Now;
+                } else
+                {
+                    var existingCube = Cubes.Where(x => x.BluetoothAddress == cube.BluetoothAddress).Single();
+                    existingCube.LastAdvertisement = DateTime.Now;
                 }
             }));
         }

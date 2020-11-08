@@ -10,7 +10,16 @@ namespace virtual_cube
         public string Name { get; set; }
         public ulong BluetoothAddress { get; set; }
         public String FormattedBluetoothAddress { get; set; }
-
+        private DateTime _LastAdvertisement;
+        public DateTime LastAdvertisement
+        {
+            get { return _LastAdvertisement; }
+            set
+            {
+                _LastAdvertisement = value;
+                OnPropertyChanged("LastAdvertisement");
+            }
+        }
         private ConnectionStatus _ConnectionStatus;
         public ConnectionStatus ConnectionStatus
         {

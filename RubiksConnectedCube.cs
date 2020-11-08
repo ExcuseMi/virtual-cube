@@ -63,6 +63,7 @@ namespace virtual_cube
 
   
                 GattCommunicationStatus status = GattCommunicationStatus.Unreachable;
+                int count = 0;
                 do
                 {
                     try
@@ -75,12 +76,17 @@ namespace virtual_cube
                         Debug.WriteLine("Error during notify" + e.Message);
 
                     }
-                } while (status != GattCommunicationStatus.Success);
+                } while (status != GattCommunicationStatus.Success && ++count<5);
+                if (status == GattCommunicationStatus.Success)
+                {
+                    ReadData.ValueChanged += HandleRealTimeData;
 
-                ReadData.ValueChanged += HandleRealTimeData;
-
-                await WriteValue();
-                ConnectionStatus = ConnectionStatus.CONNECTED;
+                    await WriteValue();
+                    ConnectionStatus = ConnectionStatus.CONNECTED;
+                } else
+                {
+                    ConnectionStatus = ConnectionStatus.DISCONNECTED;
+                }
             }
         }
 
